@@ -6,7 +6,7 @@ This code example demonstrates the implementation of a vendor-specific USB devic
 
 [View this README on GitHub.](https://github.com/Infineon/mtb-example-fx20-usbss-device)
 
-[Provide feedback on this code example.](https://cypress.co1.qualtrics.com/jfe/form/SV_1NTns53sK2yiljn?Q_EED=eyJVbmlxdWUgRG9jIElkIjoiQ0UyNDA4NzIiLCJTcGVjIE51bWJlciI6IjAwMi00MDg3MiIsIkRvYyBUaXRsZSI6IkVaLVVTQiZ0cmFkZTsgRlgyMDogVVNCU1MgZGV2aWNlIGFwcGxpY2F0aW9uIiwicmlkIjoic3VrdSIsIkRvYyB2ZXJzaW9uIjoiMS4wLjAiLCJEb2MgTGFuZ3VhZ2UiOiJFbmdsaXNoIiwiRG9jIERpdmlzaW9uIjoiTUNEIiwiRG9jIEJVIjoiV0lSRUQiLCJEb2MgRmFtaWx5IjoiU1NfVVNCIn0=)
+[Provide feedback on this code example.](https://cypress.co1.qualtrics.com/jfe/form/SV_1NTns53sK2yiljn?Q_EED=eyJVbmlxdWUgRG9jIElkIjoiQ0UyNDA4NzIiLCJTcGVjIE51bWJlciI6IjAwMi00MDg3MiIsIkRvYyBUaXRsZSI6IkVaLVVTQiZ0cmFkZTsgRlgyMDogVVNCU1MgZGV2aWNlIGFwcGxpY2F0aW9uIiwicmlkIjoic3VrdSIsIkRvYyB2ZXJzaW9uIjoiMS4wLjEiLCJEb2MgTGFuZ3VhZ2UiOiJFbmdsaXNoIiwiRG9jIERpdmlzaW9uIjoiTUNEIiwiRG9jIEJVIjoiV0lSRUQiLCJEb2MgRmFtaWx5IjoiU1NfVVNCIn0=)
 
 
 ## Requirements
@@ -328,6 +328,7 @@ Document title: *CE240872* – *EZ-USB&trade; FX20: USBSS device application*
 
  Version | Description of change
  ------- | ---------------------
+ 1.0.1   | Updated to use latest USBFXStack from GitHub
  1.0.0   | New code example
 <br>
 

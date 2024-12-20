@@ -1,4 +1,4 @@
-# USBSS Device Application 1.0.0
+# USBSS Device Application 1.0.1
 
 ## What's Included?
 

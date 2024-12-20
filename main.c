@@ -669,6 +669,7 @@ void Cy_PrintByte(uint8_t data)
     Cy_SCB_WriteTxFifo (LOGGING_SCB, CHARMAP(data & 0xF));
     Cy_SCB_WriteTxFifo (LOGGING_SCB, ' ');
 }
+
 void PrintDword(uint32_t data)
 {
     while (Cy_SCB_UART_GetNumInTxFifo (LOGGING_SCB) >= 16);
