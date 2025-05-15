@@ -174,7 +174,7 @@ Cy_USB_AppInit (cy_stc_usb_app_ctxt_t *pAppCtxt,
 
 /*
  * Function: Cy_USB_AppRegisterCallback()
- * Description: This function will register all calback with USBD layer. 
+ * Description: This function will register all calback with USBD layer.
  * Parameter: cy_stc_usb_app_ctxt_t.
  * return: None.
  */
@@ -653,8 +653,31 @@ Cy_USB_AppQueueWrite (cy_stc_usb_app_ctxt_t *pAppCtxt, uint8_t endpNum,
     DBG_APP_TRACE("Cy_USB_AppQueueWrite <<\r\n");
 } /* end of function */
 
-void
-HbDma_Cb (cy_stc_hbdma_channel_t *pHandle, cy_en_hbdma_cb_type_t type,
+
+
+/*******************************************************************************
+* Function Name: HbDma_Cb
+****************************************************************************//**
+*
+* Callback function to handle HBDMA events
+*
+* \param *pHandle
+*  Handle to the HBDMA Channel structure
+*
+* \param type
+* Type of the DMA event being notified.
+*
+* \param pbufStat
+* Provides active DMA buffer status where applicable.
+*
+* \param userCtx
+* User provided data which is passed back to the event callback.
+*
+* \return None
+*
+*******************************************************************************/
+
+void HbDma_Cb (cy_stc_hbdma_channel_t *pHandle, cy_en_hbdma_cb_type_t type,
           cy_stc_hbdma_buff_status_t* pbufStat, void *userCtx)
 {
     cy_stc_usb_app_ctxt_t     *pAppCtxt = (cy_stc_usb_app_ctxt_t *)userCtx;
@@ -759,8 +782,8 @@ Cy_USB_RecvEndp0TimerCallback (TimerHandle_t xTimer)
 
 /*
  * Function: Cy_USB_AppSetCfgCallback()
- * Description: This Function will be called by USBD  layer when 
- *              set configuration command successful. This function 
+ * Description: This Function will be called by USBD  layer when
+ *              set configuration command successful. This function
  *              does sanity check and prepare device for function
  *              to take over.
  * Parameter: pAppCtxt, cy_stc_usb_usbd_ctxt_t
@@ -883,8 +906,7 @@ Cy_USB_AppBusResetCallback (void *pAppCtxt, cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
 
     DBG_APP_INFO("ResetCallback >>\r\n");
 
-    /* NT TBD: comeback and review code.
-     * Stop and destroy the high bandwidth DMA channel if present.
+    /* Stop and destroy the high bandwidth DMA channel if present.
      * To be done before AppInit is called.
      */
     //Cy_USB_AppHbDmaDisableEndpDmaSetAll(pUsbApp);
@@ -1100,6 +1122,9 @@ Cy_USB_AppSetIntfCallback (void *pAppCtxt, cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
     Cy_USB_EchoDeviceTaskHandler(pUsbApp, &xMsg);
 #endif /* FREERTOS_ENABLE */
 
+    /* Enable the clock stop on endpoint reset feature. */
+    Cy_USBSS_Cal_ClkStopOnEpRstEnable(pUsbdCtxt->pSsCalCtxt, true);
+
     /* Now unconfigure things related to previous altSetting*/
     numOfEndp = Cy_USBD_FindNumOfEndp(pIntfDscr);
     DBG_APP_INFO("NumOfEndp=%d in CurrIntf\r\n",numOfEndp);
@@ -1126,9 +1151,6 @@ Cy_USB_AppSetIntfCallback (void *pAppCtxt, cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
 
     DBG_APP_INFO("Prev AltSet Unconfigured....... \r\n");
 
-    /* Flush all EPM contents at this stage. */
-    Cy_USBD_FlushEndpAll(pUsbdCtxt, CY_USB_ENDP_DIR_IN);
-
     /* Now take care of different config with new alt setting. */
     DBG_APP_INFO("New AltSet ConfigStarts........ \r\n");
     pUsbApp->currentAltSetting = newAltSetting;
@@ -1146,7 +1168,6 @@ Cy_USB_AppSetIntfCallback (void *pAppCtxt, cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
         pUsbApp->currentAltSetting = newAltSetting;
         pEndpDscr = Cy_USBD_GetEndpDscr(pUsbdCtxt, pIntfDscr);
         while (numOfEndp != 0x00) {
-            //Cy_USB_AppConfigureEndp(pUsbdCtxt, pEndpDscr);
             Cy_USB_AppSetupEndpDmaParams(pAppCtxt, pEndpDscr);
             numOfEndp--;
             if(pUsbApp->devSpeed > CY_USBD_USB_DEV_HS) {
@@ -1156,6 +1177,9 @@ Cy_USB_AppSetIntfCallback (void *pAppCtxt, cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
             }
         }
     }
+
+    /* Disable the clock stop on endpoint reset feature. */
+    Cy_USBSS_Cal_ClkStopOnEpRstEnable(pUsbdCtxt->pSsCalCtxt, false);
 
     /*
      * Send message to setup and start data transfer.
@@ -1497,7 +1521,6 @@ Cy_USB_HandleEchoDeviceReqs (void *pAppCtxt, cy_stc_usb_usbd_ctxt_t *pUsbdCtxt)
 
         if ((bRequest == 0xF0) && (bmRequest == 0xC0)) {
             /* Device capability request */
-            /* TBD: Prepare data and then send the same. */
             retCode = CY_USB_APP_STATUS_SUCCESS;
             break;
         }

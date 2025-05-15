@@ -147,3 +147,5 @@ Thumbs.db:encryptable
 ehthumbs.db
 ehthumbs_vista.db
 [Dd]esktop.ini
+#Include the bootloader binary
+!bootloader/bin/fx_bl_cm0p.hex

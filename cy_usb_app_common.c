@@ -153,6 +153,8 @@ Cy_USB_AppConfigureEndp (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt, uint8_t *pEndpDscr)
      */
     endpConfig.allowNakTillDmaRdy = TRUE;
     Cy_USB_USBD_EndpConfig(pUsbdCtxt, endpConfig);
+    Cy_USBD_ResetEndp(pUsbdCtxt, endpNum, endpDirection, false);
+    Cy_SysLib_Delay(1);
 
     DBG_APP_TRACE("Cy_USB_AppConfigureEndp << \r\n");
     return;
@@ -230,6 +232,7 @@ Cy_USB_AppDestroyEndpDmaParamsSs (cy_stc_usb_app_ctxt_t *pUsbApp,
                       endpDir ? (CY_USB_ENDP_DIR_IN):(CY_USB_ENDP_DIR_OUT));
     Cy_USBD_ResetEndp(pUsbApp->pUsbdCtxt, endpNum,
                       endpDir ? (CY_USB_ENDP_DIR_IN):(CY_USB_ENDP_DIR_OUT), false);
+    Cy_SysLib_Delay(1);
 
     /* Disable Endpoint at controller level */
     Cy_USBD_EnableEndp(pUsbApp->pUsbdCtxt, endpNum,
@@ -282,6 +285,7 @@ Cy_USB_AppDestroyEndpDmaParamsHs (cy_stc_usb_app_ctxt_t *pUsbApp,
                       endpDir ? (CY_USB_ENDP_DIR_IN):(CY_USB_ENDP_DIR_OUT));
     Cy_USBD_ResetEndp(pUsbApp->pUsbdCtxt, endpNum,
                       endpDir ? (CY_USB_ENDP_DIR_IN):(CY_USB_ENDP_DIR_OUT), false);
+    Cy_SysLib_Delay(1);
 
     /* This function takes care of retrieving channel from endpDmaSet */
     if (endpDir) {
@@ -431,7 +435,7 @@ Cy_USB_AppDestroyHbDmaChannel (cy_stc_hbdma_channel_t *pHandle)
     /* Destroy function takes care of disabling channel also. */
     mgrStatus = Cy_HBDma_Channel_Destroy(pHandle);
     if (mgrStatus != CY_HBDMA_MGR_SUCCESS) {
-        DBG_APP_ERR(" Err while calling channelDisroy%x\r\n", mgrStatus);
+        DBG_APP_ERR("Cy_HBDma_Channel_Destroy error:0x%x\r\n", mgrStatus);
         return(mgrStatus);
     }
     DBG_APP_TRACE("Cy_USB_AppDestroyHbDmaChannel PASS\r\n");
@@ -770,7 +774,7 @@ Cy_USB_AppInitCpuDmaIntr (uint32_t endpNum, cy_en_usb_endp_dir_t endpDir,
     }
 
     if ((endpNum > 0) && (endpNum < CY_USB_NUM_ENDP_CONFIGURED)) {
-        DBG_APP_TRACE("Registring ISR for endp:%d \r\n",endpNum);
+        DBG_APP_TRACE("Registering ISR for endp:%d \r\n",endpNum);
 #if (!CY_CPU_CORTEX_M4)
         intrCfg.intrPriority = 3;
         intrCfg.intrSrc = NvicMux7_IRQn;
@@ -894,7 +898,6 @@ Cy_USB_AppHandleSetCfgCommon (cy_stc_usb_app_ctxt_t *pAppCtxt,
     pSetupReq = (cy_stc_usb_setup_req_t *)(&(pMsg->data[0]));
     /* Disable DMA if Set Config request on Config index 0 is received */
     if(pSetupReq->wValue == 0) {
-        /* TBD: Device should move to adress state so unconfigure everything. */
         DBG_APP_INFO("Set CFG 0\r\n");
         Cy_USB_AppHbDmaDisableEndpDmaSetAll(pAppCtxt);
         return CY_USB_APP_STATUS_FAILURE;

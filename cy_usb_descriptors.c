@@ -146,31 +146,32 @@ USB3_DESC_ATTRIBUTES uint8_t CyFxLangString[32] __attribute__ ((aligned (32))) =
 /* Standard Manufacturer String descriptor */
 USB3_DESC_ATTRIBUTES uint8_t CyFxMfgString[32] __attribute__ ((aligned (32))) =
 {
-    0x08,
+    0x12,
     0x03,
-    'I',
-    0x00,
-    'F',
-    0x00,
-    'X',
-    0x00
+    'I',0x00,
+    'N',0x00,
+    'F',0x00,
+    'I',0x00,
+    'N',0x00,
+    'E',0x00,
+    'O',0x00,
+    'N',0x00,
 };
 
 /* Standard Product String desciptor */
 USB3_DESC_ATTRIBUTES uint8_t CyFxProdString[32] __attribute__ ((aligned (32))) =
 {
-    0x0C,
+    0x14,
     0x03,
-    'F',
-    0x00,
-    'X',
-    0x00,
-    '3',
-    0x00,
-    'G',
-    0x00,
-    '2',
-    0x00
+    'F', 0x00,
+    'X', 0x00,
+    ' ', 0x00,
+    'U', 0x00,
+    'S', 0x00,
+    'B', 0x00,
+    ' ', 0x00,
+    'S', 0x00,
+    'S', 0x00,
 };
 
 /* USB 2.0 descriptors */
@@ -220,7 +221,7 @@ USB3_DESC_ATTRIBUTES uint8_t CyFxUSBFSConfigDscr[1024] __attribute__ ((aligned (
     0x00,0x00, /* Length of this descriptor and all sub descriptors */
     0x01,                           /* Number of interfaces */
     0x01,                           /* Configuration number */
-    0x00,                           /* COnfiguration string index */
+    0x00,                           /* Configuration string index */
     0x80,                           /* Config characteristics - bus powered */
     0x32,                           /* Max power consumption of device (in 2mA unit) : 100mA */
 
@@ -303,7 +304,7 @@ USB3_DESC_ATTRIBUTES uint8_t CyFxUSBHSConfigDscr[1024] __attribute__ ((aligned (
     0xA0,                           /* Config characteristics - bus powered  and Remote wakeup enable 0xA0 */
     0x32,                           /* Max power consumption of device (in 2mA unit) : 100mA */
 
-    /* Interface descriptor, alt setting 0, bulk tranfer */
+    /* Interface descriptor, alt setting 0, bulk transfer */
     0x09,                           /* Descriptor size */
     0x04,                           /* Interface descriptor type */
     0x00,                           /* Interface number */

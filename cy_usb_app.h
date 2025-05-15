@@ -58,7 +58,7 @@ typedef enum cy_en_usb_app_ret_code_ {
 }cy_en_usb_app_ret_code_t;
 
 /* 
- * USB applicatio data structure which is bridge between USB system and device
+ * USB application data structure which is bridge between USB system and device
  * functionality.
  * It maintains some usb system information which comes from USBD and it also
  * maintains information about device functionality.

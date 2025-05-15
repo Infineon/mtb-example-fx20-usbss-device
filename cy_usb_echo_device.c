@@ -522,7 +522,7 @@ Cy_USB_EchoDeviceHandleReadComplete (cy_stc_usb_app_ctxt_t *pAppCtxt,
             } else {
                 /* Space not available. Device will automatically send NAK. */
                 pIfxQueue->readActive = false;
-                DBG_APP_ERR("QueueSpace NotAvailabale \r\n");
+                DBG_APP_ERR("QueueSpace Not Available \r\n");
             }
 
             /* If write is not submitted then  go ahead */
@@ -864,7 +864,7 @@ Cy_USB_EchoDeviceTaskHandler (void *pTaskParam, void* qMsg)
     DBG_APP_INFO("EchoDeviceThreadActive\r\n");
 
     /* Enable USB-3 connection and wait until it is stable. */
-    vTaskDelay(500);
+    vTaskDelay(250);
 
     /* If VBus is present, enable the USB connection. */
     pAppCtxt->vbusPresent =
@@ -1212,19 +1212,7 @@ Cy_USB_EchoDeviceHandleCtrlSetup (void *pApp, cy_stc_usbd_app_msg_t *pMsg)
         case CY_USB_CTRL_REQ_STD:
             DBG_APP_TRACE("StdReq\r\n");
             if ((bRequest == CY_USB_SC_SET_FEATURE) &&
-                (bTarget == CY_USB_CTRL_REQ_RECIPENT_ENDP) &&
-                (wValue == CY_USB_FEATURE_ENDP_HALT)) {
-                DBG_APP_INFO("SetFeatureReq: EndpHalt\r\n");
-                endpDir = ((wIndex & 0x80UL) ? (CY_USB_ENDP_DIR_IN) :
-                         (CY_USB_ENDP_DIR_OUT));
-                Cy_USB_USBD_EndpSetClearStall(pAppCtxt->pUsbdCtxt,
-                                              ((uint32_t)wIndex & 0x7FUL),
-                                               endpDir, true);
-                Cy_USBD_SendAckSetupDataStatusStage(pAppCtxt->pUsbdCtxt);
-                isReqHandled = true;
-            }
             
-            if ((bRequest == CY_USB_SC_SET_FEATURE) &&
                 (bTarget == CY_USB_CTRL_REQ_RECIPENT_DEVICE)) {
                 switch (wValue) {
                     case CY_USB_FEATURE_DEVICE_REMOTE_WAKE:
@@ -1264,6 +1252,9 @@ Cy_USB_EchoDeviceHandleCtrlSetup (void *pApp, cy_stc_usbd_app_msg_t *pMsg)
                 (bTarget == CY_USB_CTRL_REQ_RECIPENT_ENDP) &&
                 (wValue == CY_USB_FEATURE_ENDP_HALT)) {
 
+                /* Enable clock control across EP reset operation to ensure that the EP is properly flushed. */
+                Cy_USBSS_Cal_ClkStopOnEpRstEnable(pAppCtxt->pUsbdCtxt->pSsCalCtxt, true);
+
                 endpDir = ((wIndex & 0x80UL) ? (CY_USB_ENDP_DIR_IN) :
                          (CY_USB_ENDP_DIR_OUT));
                 endpNum = (uint32_t)wIndex & 0x7FUL;
@@ -1292,7 +1283,10 @@ Cy_USB_EchoDeviceHandleCtrlSetup (void *pApp, cy_stc_usbd_app_msg_t *pMsg)
 
                 Cy_USBD_FlushEndp(pAppCtxt->pUsbdCtxt,endpNum, endpDir);
                 Cy_USBD_ResetEndp(pAppCtxt->pUsbdCtxt,endpNum, endpDir, false);
+                Cy_SysLib_Delay(1);
                 Cy_USB_USBD_EndpSetClearStall(pAppCtxt->pUsbdCtxt, endpNum, endpDir, false);
+
+                Cy_USBSS_Cal_ClkStopOnEpRstEnable(pAppCtxt->pUsbdCtxt->pSsCalCtxt, false);
 
                 if(endpDir == CY_USB_ENDP_DIR_OUT)
                 {
@@ -1310,9 +1304,8 @@ Cy_USB_EchoDeviceHandleCtrlSetup (void *pApp, cy_stc_usbd_app_msg_t *pMsg)
                     case CY_USB_FEATURE_DEVICE_REMOTE_WAKE:
                         DBG_APP_INFO("ClrFeature:CY_USB_FEATURE_DEVICE_REMOTE_WAKE\r\n");
                         Cy_USBD_SendAckSetupDataStatusStage(pAppCtxt->pUsbdCtxt);
-            /* TBD NT Enablng LPM only for CV test */
                         DBG_APP_INFO("Enabling LPM\r\n");
-            Cy_USBD_LpmEnable(pAppCtxt->pUsbdCtxt);
+                        Cy_USBD_LpmEnable(pAppCtxt->pUsbdCtxt);
                         isReqHandled = true;
                         break;
 
@@ -1327,7 +1320,7 @@ Cy_USB_EchoDeviceHandleCtrlSetup (void *pApp, cy_stc_usbd_app_msg_t *pMsg)
                         Cy_USBD_SendAckSetupDataStatusStage(pAppCtxt->pUsbdCtxt);
                         isReqHandled = true;
                         break;
-                    
+
                     default:
                         /*
                          * Unknown feature selector so dont handle here.
@@ -1335,7 +1328,7 @@ Cy_USB_EchoDeviceHandleCtrlSetup (void *pApp, cy_stc_usbd_app_msg_t *pMsg)
                          */
                         DBG_APP_INFO("default of wValue\r\n");
                         isReqHandled = false;
-                    break;
+                        break;
                 }
             }
             
